@@ -15,10 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HttpControllerTest {
 
+	private static final String TAG = "HttpControllerTest : ";
+	
+	// http://localhost:8000/blog/http/lombok
+	@GetMapping("/http/lombok")
+	public String lombokTest() {
+		//Member m = new Member(1,"ssar","1234","email");
+		Member m= Member.builder().username("ssar").password("1234").email("email").build();
+		System.out.println(TAG+ "getter : "+ m.getId());
+		m.setId(5000);
+		System.out.println(TAG+ "setter : "+ m.getId() );
+		return "lombok test 완료";
+	}
+	
 	//인터넷 브라우저 요청은 무조건 get밖에 안된다! 나머지는 405 에러
 	// http://localhost:8080/http/get(select)
 	@GetMapping("/http/get")
 	public String getTest(Member m) {// ?id=1&username=ssar&password=1234&email=abcd@naver.com
+		
 		return "get 요청: "+m.getId()+" ,"+m.getUsername()+" ,"+m.getPassword()
 		+" ,"+m.getEmail();
 	}
