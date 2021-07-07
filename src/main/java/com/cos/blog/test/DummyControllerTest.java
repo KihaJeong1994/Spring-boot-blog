@@ -3,13 +3,19 @@ package com.cos.blog.test;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cos.blog.model.RoleType;
@@ -22,6 +28,42 @@ public class DummyControllerTest {
 	
 	@Autowired //의존성 주입(DI)
 	private UserRepository userRepository;
+	
+	@DeleteMapping("/dummy/user/{id}")
+	public String delete(@PathVariable int id) {
+		try {
+			userRepository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			return "삭제에 실패하였습니다  "+id +"아이디는 DB에 없습니다.";
+		}
+		
+		
+		return "삭제되었습니다 : "+id;
+	}
+	
+	//save 함수는 id를 전달하지 않으면 insert를 해주고
+	//save 함수는 id를 전달하면 해당 id에 대한 데이터가 있으면 update를 해주고
+	//save 함수는 id를 전달하면 해당 id에 대한 데이터가 없으면 insert
+	//email, password 수정 / @RequestBody가 json 데이터를 받을 때 사용
+	@Transactional //save를 사용하지 않아도 update 가능, 함수 종료시에 자동 commit(data의 변경 감지하면 자동 update<더티체킹>=> save함수 필요 x)
+	@PutMapping("/dummy/user/{id}")
+	public User updateUser(@PathVariable int id, @RequestBody User requestUser) {//json 데이터를 요청=> Java Object(MessageConverter 의 Jackson 라이브러리가)로 변환해서 받아줌
+		System.out.println("id: "+id);
+		System.out.println("password: "+requestUser.getPassword());
+		System.out.println("email: "+requestUser.getEmail());
+		
+		//자바 람다식 사용
+		User user = userRepository.findById(id).orElseThrow(()->{
+			return new IllegalArgumentException("수정에 실패하였습니다.");
+		});
+		user.setPassword(requestUser.getPassword());
+		user.setEmail(requestUser.getEmail());
+		
+		//userRepository.save(user); 
+		
+		//더티 체킹
+		return user;
+	}
 	
 	//http://localhost:8000/blog/dummy/users
 	@GetMapping("/dummy/users")
