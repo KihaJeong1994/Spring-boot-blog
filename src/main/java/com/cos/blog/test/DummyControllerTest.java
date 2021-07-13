@@ -74,11 +74,11 @@ public class DummyControllerTest {
 	//한 페이지당 2건에 데이터를 리턴받아 볼 예정
 	////http://localhost:8000/blog/dummy/user?page=0 // get 방식으로 뒤에 page 파라미터를 붙여주면 됨(0부터 시작)
 	@GetMapping("/dummy/user")
-	public List<User> pageList(@PageableDefault(size = 2,sort = "id", direction = Sort.Direction.DESC) org.springframework.data.domain.Pageable pageable){
+	public Page<User> pageList(@PageableDefault(size = 2,sort = "id", direction = Sort.Direction.DESC) org.springframework.data.domain.Pageable pageable){
 		Page<User> pagingUser =  userRepository.findAll(pageable);
 
 		List<User> users = pagingUser.getContent();
-		return users;
+		return pagingUser;
 	}
 	
 	//{id} 주소로 파라미터를 전달받을 수 있음
