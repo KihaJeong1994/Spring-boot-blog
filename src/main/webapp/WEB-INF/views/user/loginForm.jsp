@@ -13,6 +13,8 @@
 
 	
 	<button id="btn-login" class="btn btn-primary ">·Î±×ÀÎ</button>
+	<a href="https://kauth.kakao.com/oauth/authorize?client_id=6e47228c3e5ab89c7c5f2ce909617b57&redirect_uri=	
+http://localhost:8000/auth/kakao/callback&response_type=code"><img height="38px" src="/image/kakao_login_button.png"/></a>
 	</form>
 </div>
 

@@ -3,6 +3,9 @@ let index = {
 		$("#btn-save").on("click",()=>{//function(){}, ()=>{} 사용하는 이유: this를 바인딩 하기 위해서
 			this.save();
 		});
+		$("#btn-update").on("click",()=>{
+			this.update();
+		});
 
 	},
 	save:function(){
@@ -35,6 +38,30 @@ let index = {
 		// ajax를 이용하는 이유
 		// 1. html 파일이 아닌 data(json)을 받기 위해서 => 브라우저, 앱 모두 적용가능(앱은 html 응답x)
 		// 2. 비동기 통신 => 사용자 경험(UX) 증진 / callback: 하던일을 멈추고 다른일로 돌아감
+		
+	},
+	update:function(){
+		let data={
+			id :$("#id").val(),
+			username:$("#username").val(),
+			password:$("#password").val(),
+			email:$("#email").val(),
+		};
+		$.ajax({
+			type:"PUT",
+			url:"/user",
+			data: JSON.stringify(data), 
+			contentType:"application/json; charset=utf-8",
+			dataType:"json"
+		}).done(function(resp){
+			//성공 시
+			console.log(resp);
+			alert("회원가입이 완료되었습니다.")
+			location.href="/";
+		}).fail(function(error){
+			//실패 시
+			alert(JSON.stringify(error));
+		}); 
 		
 	},
 	
