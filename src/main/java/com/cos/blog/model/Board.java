@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,9 +15,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,9 +52,11 @@ public class Board {
 	private User user; // DB는 오브젝트를 저장할 수 없다. FK, 자바는 오브젝트를 저장할 수 있다.
 	
 	//게시판에 쓴 여러 댓글을 보여줄 거임 OneToMany FetchType 디폴트는 LAZY
-	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER) // mappedBy 연관관계의 주인이 아니다(나는 FK가 아니다) DB에 컬럼을 만들지 마세요
+	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade = CascadeType.REMOVE) // mappedBy 연관관계의 주인이 아니다(나는 FK가 아니다) DB에 컬럼을 만들지 마세요
+	@JsonIgnoreProperties({"board"}) //reply - board - reply - board 무한참조 방지!
+	@OrderBy("id desc")
 	//@JoinColumn(name="replyId") foreign key는 여기 필요 없음!
-	private List<Reply> reply;
+	private List<Reply> replys;
 	
 	@CreationTimestamp
 	private Timestamp createDate;

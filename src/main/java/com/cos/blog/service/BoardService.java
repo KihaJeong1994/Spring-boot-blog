@@ -9,10 +9,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cos.blog.dto.ReplySaveRequestDto;
 import com.cos.blog.model.Board;
+import com.cos.blog.model.Reply;
 import com.cos.blog.model.RoleType;
 import com.cos.blog.model.User;
 import com.cos.blog.repository.BoardRepository;
+import com.cos.blog.repository.ReplyRepository;
 import com.cos.blog.repository.UserRepository;
 
 //스프링이 컴포넌트 스캔을 통해서 Bean에 등록을 해줌. IoC를 해준다
@@ -21,9 +24,13 @@ public class BoardService {
 
 	@Autowired
 	private BoardRepository boardRepository; // DAO
+	
+	@Autowired
+	private ReplyRepository replyRepository;
+	
 
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public void 글쓰기(Board board,User user) { // title, content
 		board.setCount(0);
 		board.setUser(user);
@@ -43,6 +50,17 @@ public class BoardService {
 	@Transactional
 	public void 글삭제하기(int id) {
 		boardRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public void 댓글쓰기(ReplySaveRequestDto replySaveRequestDto) {
+		replyRepository.mSave(replySaveRequestDto.getUserId(),replySaveRequestDto.getBoardId(),replySaveRequestDto.getContent());
+		//System.out.println(reply); // 오브젝트를 출력하게 되면 자동으로 toString() 호출됨
+	}
+	
+	@Transactional
+	public void 댓글삭제(int replyId) {
+		replyRepository.deleteById(replyId);
 	}
 
 }
